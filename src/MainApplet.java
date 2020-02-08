@@ -1,4 +1,3 @@
-import java.applet.Applet;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -9,20 +8,21 @@ import java.util.*;
 import java.awt.*;
 import java.text.*;
 
-public class MainApplet extends Applet implements MouseListener, MouseMotionListener, Runnable
+public class MainApplet extends Frame implements MouseListener, MouseMotionListener, Runnable
 {
 	private static final long serialVersionUID = 956428199263150993L;
 	private static final Vector gravity = new Vector(0,.98);
 	private Vector mousePos = new Vector(0,0);
 	private Circles actualCircle;
-	private Circles redBall;
+	private static Circles redBall;
 	static ArrayList<Circles> circle = new ArrayList<Circles>();
 	private Image dbImage;
 	private Graphics dbg;
-	final int appletWidth = 800;
-	final int appletHeight = 500;
+	static final int appletWidth = 800;
+	static final int appletHeight = 500;
 	private final double screenArea = (appletWidth * appletHeight);
-	private static final int monitorRefreshRate = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getRefreshRate();
+	//private static final int monitorRefreshRate = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getRefreshRate();
+	private static final int monitorRefreshRate = 60;
 	private static final long rateNs = (long)1000000000/monitorRefreshRate;
 	private double areaFilled = 0;
 	boolean expandingCircle = false;
@@ -38,20 +38,22 @@ public class MainApplet extends Applet implements MouseListener, MouseMotionList
 		
 	}
 
-	public void init()
+	public static void main(String args[])
 	{
-		setSize(appletWidth, appletHeight+100);
-		this.addMouseListener(this);
-		this.addMouseMotionListener(this);
+		MainApplet mainApplet = new MainApplet();
+		mainApplet.setSize(appletWidth, appletHeight+100);
+		mainApplet.addMouseListener(mainApplet);
+		mainApplet.addMouseMotionListener(mainApplet);
 		System.out.println("Monitor Refresh Rate: " + monitorRefreshRate + " -- Refresh Rate in Nano Seconds: " + rateNs);
 		
 
 			redBall = new Circles(new Vector(((int)(Math.random()*appletHeight)), ((int)(Math.random()*appletWidth))), new Vector(0,0), redBallRadius);
 			redBall.oldPos = redBall.pos.sub(new Vector(Math.random()>0.5?2:-2,Math.random()>0.5?2:-2));
 			redBall.mass = 100;
-			Thread thread = new Thread(this);
+			Thread thread = new Thread(mainApplet);
 			thread.setDaemon(true);
 			thread.start();
+		mainApplet.setVisible(true);
 	}
 	
 	@Override
